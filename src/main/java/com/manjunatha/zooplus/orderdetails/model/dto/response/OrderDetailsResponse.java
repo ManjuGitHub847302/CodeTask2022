@@ -24,6 +24,8 @@ public class OrderDetailsResponse {
 	private String comments;
 	
 	private String productId;
+	
+	private String customerPreviousBalance;
 
 
 }

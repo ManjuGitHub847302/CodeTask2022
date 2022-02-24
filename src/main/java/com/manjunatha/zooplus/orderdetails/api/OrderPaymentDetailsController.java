@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.manjunatha.zooplus.orderdetails.model.dto.request.OrderDetailsRequest;
 import com.manjunatha.zooplus.orderdetails.model.dto.request.OrderPaymentRequest;
 import com.manjunatha.zooplus.orderdetails.model.dto.response.CustomerBalanceResponse;
+import com.manjunatha.zooplus.orderdetails.model.dto.response.OrderBalanceResponse;
 import com.manjunatha.zooplus.orderdetails.model.dto.response.OrderDetailsResponse;
 import com.manjunatha.zooplus.orderdetails.model.dto.response.OrderPaymentResponse;
 import com.manjunatha.zooplus.orderdetails.service.OrderPaymentService;
@@ -51,12 +52,12 @@ public class OrderPaymentDetailsController {
 	
 	//Rest Service 3: Get : Service to get the order balance
 	@GetMapping("/getorderbalance/orderId/{orderId}")
-	public ResponseEntity<OrderPaymentResponse> getOrderBalance(@PathVariable (name="orderId") String orderId) {
+	public ResponseEntity<OrderBalanceResponse> getOrderBalance(@PathVariable (name="orderId") String orderId) {
 		
 		log.info("Entering the orderBalance method >>>" + orderId);
-		OrderPaymentResponse orderPaymentResponse = orderPaymentService.getOrderBalance(orderId);
-		log.info("Exit the orderBalance Resposnse method >>>" + orderPaymentResponse);
-		 return ResponseEntity.status(HttpStatus.OK).body(orderPaymentResponse);
+		OrderBalanceResponse orderBalanceResponse = orderPaymentService.getOrderBalance(orderId);
+		log.info("Exit the orderBalance Resposnse method >>>" + orderBalanceResponse);
+		 return ResponseEntity.status(HttpStatus.OK).body(orderBalanceResponse);
 	  }
 	
 	//Rest Service 4: Get : Service to get the Customer balance

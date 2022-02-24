@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 
 public class OrderDetailsInfoDto {
 	
-
 	private Long orderId;
 	
 	private Long customerId;
@@ -27,5 +26,7 @@ public class OrderDetailsInfoDto {
 	private BigDecimal totalOrderAmount;
 	
 	private String comments;
+	
+	private BigDecimal customerPreviousBalance;
 
 }

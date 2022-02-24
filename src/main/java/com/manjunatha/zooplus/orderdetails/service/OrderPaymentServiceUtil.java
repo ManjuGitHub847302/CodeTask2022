@@ -10,14 +10,17 @@ import com.manjunatha.zooplus.orderdetails.model.dto.info.OrderPaymentInfoDto;
 import com.manjunatha.zooplus.orderdetails.model.dto.request.OrderDetailsRequest;
 import com.manjunatha.zooplus.orderdetails.model.dto.request.OrderPaymentRequest;
 import com.manjunatha.zooplus.orderdetails.model.dto.response.CustomerBalanceResponse;
+import com.manjunatha.zooplus.orderdetails.model.dto.response.OrderBalanceResponse;
 import com.manjunatha.zooplus.orderdetails.model.dto.response.OrderDetailsResponse;
 import com.manjunatha.zooplus.orderdetails.model.dto.response.OrderPaymentResponse;
 import com.manjunatha.zooplus.orderdetails.model.persistence.CustomerEntity;
 import com.manjunatha.zooplus.orderdetails.model.persistence.OrderDetailsEntity;
 import com.manjunatha.zooplus.orderdetails.model.persistence.PaymentEntity;
 
+import lombok.extern.slf4j.Slf4j;
 
-//@Slf4j
+
+@Slf4j
 public class OrderPaymentServiceUtil {
 	
 	public static OrderDetailsInfoDto convertOrderDtoEntity(OrderDetailsRequest orderDetailsRequest) {
@@ -27,7 +30,7 @@ public class OrderPaymentServiceUtil {
 				reduce((a, b) -> a.concat(",").concat(b)).get();
 		orderDtoToEntity.setProductId(orderProductId);
 		orderDtoToEntity.setCustomerId(Long.valueOf(orderDetailsRequest.getCustomerId()));
-		orderDtoToEntity.setTotalOrderAmount(new BigDecimal("452.31"));
+		orderDtoToEntity.setTotalOrderAmount(new BigDecimal("0"));
 		orderDtoToEntity.setOrderDate(new Date());
 		orderDtoToEntity.setComments("Order Created Sucessfully");
 		orderDtoToEntity.setOrderStatus(1);
@@ -47,8 +50,9 @@ public class OrderPaymentServiceUtil {
 		return orderEntityToDto;
 	 }
 
-	public static OrderDetailsResponse convertOrderDtoToResponse(OrderDetailsInfoDto orderEntityToDto) {
+	public static OrderDetailsResponse convertOrderDtoToResponse(OrderDetailsInfoDto orderEntityToDto,String getCustomerPreviousBalance) {
 		
+		log.info("Print getCustomerPreviousBalance"+getCustomerPreviousBalance);
 		OrderDetailsResponse orderDetailsResponse = new OrderDetailsResponse();
 		orderDetailsResponse.setProductId(orderEntityToDto.getProductId());
 		orderDetailsResponse.setOrderId(orderEntityToDto.getOrderId().toString());
@@ -57,19 +61,20 @@ public class OrderPaymentServiceUtil {
 		orderDetailsResponse.setTotalOrderAmount(orderEntityToDto.getTotalOrderAmount().toString());
 		orderDetailsResponse.setOrderStatus(String.valueOf(orderEntityToDto.getOrderStatus()));
 		orderDetailsResponse.setCustomerId(orderEntityToDto.getCustomerId().toString());
+		orderDetailsResponse.setCustomerPreviousBalance(getCustomerPreviousBalance);
 		return orderDetailsResponse;
 	}
 
 	public static OrderPaymentInfoDto convertpaymentDtoEntity(OrderPaymentRequest orderPaymentRequest) {
 		
 		OrderPaymentInfoDto orderPaymentInfoDto = new OrderPaymentInfoDto();
-		orderPaymentInfoDto.setCustomerId(Integer.parseInt((orderPaymentRequest.getCustomerId())));
-		orderPaymentInfoDto.setOrderId(Integer.parseInt((orderPaymentRequest.getOrderId())));
+		orderPaymentInfoDto.setCustomerId(Long.parseLong(orderPaymentRequest.getCustomerId()));
+		orderPaymentInfoDto.setOrderId(Long.parseLong(orderPaymentRequest.getOrderId()));
 		orderPaymentInfoDto.setPaidAmount(new BigDecimal(orderPaymentRequest.getPaidAmount()));
 		orderPaymentInfoDto.setPaymentDate(new Date());
-		orderPaymentInfoDto.setInvoiceAmount(new BigDecimal("456.890"));
+		//orderPaymentInfoDto.setInvoiceAmount(new BigDecimal("0"));
 		orderPaymentInfoDto.setPaymentMode(orderPaymentRequest.getPaymentMode());
-		orderPaymentInfoDto.setOrderBalance(new BigDecimal("900.890"));
+		orderPaymentInfoDto.setOrderBalance(new BigDecimal("0"));
 		return orderPaymentInfoDto;
 	}
 
@@ -102,8 +107,8 @@ public class OrderPaymentServiceUtil {
 		return orderPaymentResponse;
 	}
 
-	public static OrderPaymentResponse convertPaymentEntityResponse(PaymentEntity paymentEntity) {
-		OrderPaymentResponse orderbalanceResponse = new OrderPaymentResponse();
+	public static OrderBalanceResponse convertPaymentEntityResponse(PaymentEntity paymentEntity) {
+		OrderBalanceResponse orderbalanceResponse = new OrderBalanceResponse();
 		orderbalanceResponse.setOrderBalance(paymentEntity.getOrderBalance().toString());
 		orderbalanceResponse.setOrderId(String.valueOf(paymentEntity.getOrderId()));
 		return orderbalanceResponse;

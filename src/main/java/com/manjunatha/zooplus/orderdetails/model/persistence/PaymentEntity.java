@@ -34,10 +34,10 @@ public class PaymentEntity {
 	private Long id;
 	
 	@Column(name="CUSTOMER_ID")
-	private int customerId;
+	private Long customerId;
 	
 	@Column(name="ORDER_ID")
-	private int orderId;
+	private Long orderId;
 	
 	@Column(name="PAYMENT_DATE")
 	@Temporal(TemporalType.TIMESTAMP)
@@ -56,7 +56,7 @@ public class PaymentEntity {
 	private String paymentMode;
 	
 
-	public PaymentEntity(int customerId, int orderId, Date paymentDate, BigDecimal paidAmount, BigDecimal invoiceAmount,
+	public PaymentEntity(Long customerId, Long orderId, Date paymentDate, BigDecimal paidAmount, BigDecimal invoiceAmount,
 			BigDecimal orderBalance,String paymentMode) {
 		this.customerId = customerId;
 		this.orderId = orderId;

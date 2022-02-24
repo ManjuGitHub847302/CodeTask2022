@@ -12,6 +12,6 @@ import com.manjunatha.zooplus.orderdetails.model.persistence.PaymentEntity;
 public interface OrderPaymentRepository extends JpaRepository<PaymentEntity, Long>{
 	
 	@Query("SELECT m from PaymentEntity m where m.orderId = ?1")
-	Optional<PaymentEntity> findOrderBalanceByOrderId(Integer orderId); 
+	Optional<PaymentEntity> findOrderBalanceByOrderId(Long orderId); 
 
 }

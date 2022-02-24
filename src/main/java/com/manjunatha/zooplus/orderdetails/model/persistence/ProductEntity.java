@@ -28,7 +28,7 @@ public class ProductEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SQ_PRODUCT_ID")
 	@Column(name="ID")
-	private int id;
+	private Long id;
 	
 	@Column(name="PRODUCT_NAME")
 	private String productName;

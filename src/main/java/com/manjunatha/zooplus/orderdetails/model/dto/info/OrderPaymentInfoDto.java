@@ -14,9 +14,9 @@ public class OrderPaymentInfoDto {
 	
 	private Long paymentId;
 	
-	private int customerId;
+	private Long customerId;
 	
-	private int orderId;
+	private Long orderId;
 	
 	private Date paymentDate;
 	
