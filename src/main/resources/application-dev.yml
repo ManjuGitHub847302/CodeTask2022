@@ -1,7 +1,8 @@
 server: 
   port: 9094
 spring: 
-  datasource: 
+  datasource:
+    generate-unique-name: false 
     url: jdbc:h2:mem:testdb
   h2: 
     console: 

@@ -57,7 +57,14 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 
 		String getCustomerPreviousBalance = "";
 
-		getOrderTotalAmount(orderDtoToEntity, getCustomerPreviousBalance);
+		BigDecimal totalOrderInvoiceAmountBalance = BigDecimal.ZERO;
+		
+		getOrderTotalAmount(orderDtoToEntity, getCustomerPreviousBalance,totalOrderInvoiceAmountBalance);
+		
+		if(getCustomerPreviousBalance.isEmpty() || getCustomerPreviousBalance == null) {
+			CustomerEntity customerEntity = getCustomerDetailsById(orderDtoToEntity.getCustomerId());
+			getCustomerPreviousBalance = customerEntity.getCustomerBalance().toString();
+		}
 
 		log.info("getCustomerPreviousBalance" + getCustomerPreviousBalance);
 
@@ -96,19 +103,20 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 	public OrderPaymentResponse registerPayment(OrderPaymentRequest orderPaymentRequest) {
 
 		log.info("Entering the orderPaymentRequest method" + orderPaymentRequest.toString());
+		OrderPaymentResponse orderPaymentResponse = new OrderPaymentResponse();
 
 		OrderPaymentInfoDto paymentDtoToEntity = OrderPaymentServiceUtil.convertpaymentDtoEntity(orderPaymentRequest);
+		
 
 		log.info("Entering the orderPaymentRequest before Service request");
 
-		// Calculate Invoice Amount logic Start
+		// Logic to get Invoice Amount logic Start
 		OrderDetailsEntity orderDetailsEntity;
 		try {
 
 			Optional<OrderDetailsEntity> orderInvoiceAmountEntity = orderDetailsRepository.findById(paymentDtoToEntity.getOrderId());
 
-			log.info("Entering OrderPaymentResponse OrderBalanceDetails.isPresent() method >>> "
-					+ orderInvoiceAmountEntity.isPresent());
+			log.info("Entering OrderPaymentResponse OrderBalanceDetails.isPresent() method >>> " + orderInvoiceAmountEntity.isPresent());
 			if (orderInvoiceAmountEntity.isPresent()) {
 				orderDetailsEntity = orderInvoiceAmountEntity.get();
 				paymentDtoToEntity.setInvoiceAmount(orderDetailsEntity.getTotalOrderAmount());
@@ -119,47 +127,124 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
-		// Calculate the Invoice Amount Logic Ends
+		
+		// Logic to get Invoice Amount logic Ends
 		
 		//Calculate Order balance Amount Starts
 		
-		
+		if(orderPaymentRequest.getPaidAmount()!=null && paymentDtoToEntity.getInvoiceAmount()!=null) {
+			
+			log.info("Entering Order Balance Logic orderPaymentRequest.getPaidAmount() "+orderPaymentRequest.getPaidAmount() 
+			+"paymentDtoToEntity.getInvoiceAmount()" + paymentDtoToEntity.getInvoiceAmount());
+			
+			BigDecimal getCalculatedOrderBalance = OrderAllAmountCalcuationUtil.getCalculatedOrderBalance(paymentDtoToEntity);
+			
+			log.info("getCalculatedOrderBalance Order Balance Logic orderPaymentRequest.getPaidAmount()"+ getCalculatedOrderBalance);
+			
+			if(getCalculatedOrderBalance!=null) {
+				paymentDtoToEntity.setOrderBalance(getCalculatedOrderBalance);
+			}
+		}
 		
 		//Calculate Order balance Amount Ends
 		
 
+		//Logic to Calculate UpdateCustomerbalance Starts
 		
+			BigDecimal customerBalanceToUpdate = BigDecimal.ZERO;
+			
+		 if(paymentDtoToEntity.getCustomerId()!=null && paymentDtoToEntity.getOrderBalance()!=null) {
+			 
+			 BigDecimal customerBalanceAmount = BigDecimal.ZERO;
+			 BigDecimal customerOrderAmount = paymentDtoToEntity.getOrderBalance();
+			 
+			 CustomerEntity customerEntity;
+			 
+				try {
+					Optional<CustomerEntity> getCustomerBalanceEntity = customerDetailsRepository.findById(paymentDtoToEntity.getCustomerId());
+					log.info("Entering getCustomerBalanceEntity getCustomerBalanceEntity >>> " + getCustomerBalanceEntity.toString() + "getCustomerBalanceEntity" + getCustomerBalanceEntity);
+					if (getCustomerBalanceEntity.isPresent()) {
+						customerEntity = getCustomerBalanceEntity.get();
+						customerBalanceAmount = customerEntity.getCustomerBalance();
+						
+						log.info("getUpdatedCustomerBalance Before>>>" + customerBalanceAmount + " "+ customerOrderAmount  + " " +customerBalanceToUpdate);
+						customerBalanceToUpdate =  OrderAllAmountCalcuationUtil.getUpdatedCustomerBalance(customerBalanceAmount, customerOrderAmount,customerBalanceToUpdate);
+						log.info("getUpdatedCustomerBalance End<<<<" + customerBalanceAmount + " "+customerOrderAmount  + " " + customerBalanceToUpdate);
+					 
+						try {
+							 if(customerBalanceToUpdate!=null) {
+								 log.info("getUpdatedCustomerBalance Before>>>" +customerBalanceToUpdate + "getCustomerBalanceEntity" +getCustomerBalanceEntity);
+								 customerEntity.setCustomerBalance(customerBalanceToUpdate);
+								 customerDetailsRepository.save(customerEntity);
+								 log.info("getUpdatedCustomerBalance Exit>>>" +customerBalanceToUpdate);
+							 }
+							
+							} catch (Exception e) {
+								// TODO: handle exception
+							}
+						
+					} else {
+						return null;
+					}
 
-		PaymentEntity orderPaymentEntity = new PaymentEntity(paymentDtoToEntity.getCustomerId(),
-				paymentDtoToEntity.getOrderId(), paymentDtoToEntity.getPaymentDate(),
-				paymentDtoToEntity.getPaidAmount(), paymentDtoToEntity.getInvoiceAmount(),
-				paymentDtoToEntity.getOrderBalance(), orderPaymentRequest.getPaymentMode());
+				} catch (Exception e) {
+					
+				}
+				
+		 }
+		 
+		
+		//Logic to Calculate UpdateCustomerbalance Ends
+		
+		 PaymentEntity orderPaymentEntity;
 
-		log.info("Entering the orderPaymentEntity before Service orderDetailsEntity");
+			Optional<PaymentEntity> OrderBalanceDetails = orderPaymentRepository.findOrderBalanceByOrderId(paymentDtoToEntity.getOrderId());
 
-		try {
+			log.info("Entering OrderPaymentResponse OrderBalanceDetails.isPresent() method >>> "
+					+ OrderBalanceDetails.isPresent());
+			if (!OrderBalanceDetails.isPresent()) {
+				// orderPaymentResponse =
+				// OrderPaymentServiceUtil.convertPaymentEntityResponse(paymentEntity);
+				
+				 orderPaymentEntity = new PaymentEntity(paymentDtoToEntity.getCustomerId(),
+						paymentDtoToEntity.getOrderId(), paymentDtoToEntity.getPaymentDate(),
+						paymentDtoToEntity.getPaidAmount(), paymentDtoToEntity.getInvoiceAmount(),
+						paymentDtoToEntity.getOrderBalance(), orderPaymentRequest.getPaymentMode());
 
-			orderPaymentRepository.save(orderPaymentEntity);
+				log.info("Entering the orderPaymentEntity before Service orderDetailsEntity");
 
-		} catch (EntityExistsException exception) {
-			log.error("Could not save the Order" + exception.getMessage());
-			// throw exception here
+				try {
+					
+					orderPaymentRepository.save(orderPaymentEntity);
 
-		}
+				} catch (EntityExistsException exception) {
+					log.error("Could not save the Order" + exception.getMessage());
+					// throw exception here
 
-		if (orderPaymentEntity == null || orderPaymentEntity.getId() == null
-				|| orderPaymentEntity.getId().toString().isEmpty()) {
-			log.error("payment Order Id is null");
-			// throw exception here
-		}
+				}
 
-		log.info("orderpaymnetEntity.getId() >>>>" + orderPaymentEntity.getId());
-		orderPaymentEntity.setId(orderPaymentEntity.getId());
+				if (orderPaymentEntity == null || orderPaymentEntity.getId() == null
+						|| orderPaymentEntity.getId().toString().isEmpty()) {
+					log.error("payment Order Id is null");
+					// throw exception here
+				}
 
-		return OrderPaymentServiceUtil
-				.convertPaymentDtoToResponse(OrderPaymentServiceUtil.convertPaymentEntityToDto(orderPaymentEntity));
-
+				log.info("orderpaymnetEntity.getId() >>>>" + orderPaymentEntity.getId());
+				orderPaymentEntity.setId(orderPaymentEntity.getId());
+				return OrderPaymentServiceUtil
+						.convertPaymentDtoToResponse(OrderPaymentServiceUtil.convertPaymentEntityToDto(orderPaymentEntity));
+				
+			} else {
+				log.error("Payment Cannot be done for the same order Id");
+			}
+			
+			return orderPaymentResponse;
+		 
 	}
+
+	
+
+	
 
 	@Override
 	public OrderBalanceResponse getOrderBalance(String orderId) {
@@ -200,67 +285,46 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 		return OrderPaymentServiceUtil.convertCustomerEntityResponse(customerEntity);
 	}
 
-	private void getOrderTotalAmount(OrderDetailsInfoDto orderDtoToEntity, String getCustomerPreviousBalance) {
+	private void getOrderTotalAmount(OrderDetailsInfoDto orderDtoToEntity, String getCustomerPreviousBalance, BigDecimal totalOrderInvoiceAmountBalance) {
 
 		List<String> productIdList = Stream.of(orderDtoToEntity.getProductId().split(",")).collect(Collectors.toList());
 
-		BigDecimal totalCalculatedProductAmount;
-		BigDecimal totalAmountBalance = BigDecimal.ZERO;
+		BigDecimal totalCalculatedProductPriceAmount;
+		BigDecimal customerBalanceAmount;
 
 		try {
 
-			List<ProductEntity> productPriceListDetails = productRepository
-					.findtheProductPriceByProductId(productIdList);
+			List<ProductEntity> productPriceListDetails = productRepository.findtheProductPriceByProductId(productIdList);
 
 			List<BigDecimal> productPriceList = productPriceListDetails.stream().map(ProductEntity::getProductPrice)
 					.collect(Collectors.toList());
 
-			log.info("productPriceList value" + productPriceList.toString());
+			totalCalculatedProductPriceAmount = productPriceList.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
 
-			totalCalculatedProductAmount = productPriceList.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+			log.info("totalCalculatedProductAmount value" + totalCalculatedProductPriceAmount);
 
-			log.info("totalCalculatedProductAmount value" + totalCalculatedProductAmount);
-
-			if (totalCalculatedProductAmount != null) {
+			if (totalCalculatedProductPriceAmount != null) {
 
 				try {
 
 					CustomerEntity customerEntity = getCustomerDetailsById(orderDtoToEntity.getCustomerId());
 
-					getCustomerPreviousBalance = customerEntity.getCustomerBalance().toString();
+					customerBalanceAmount = customerEntity.getCustomerBalance();
 
-					log.info("customerEntity.getCustomerBalance() >>" + customerEntity.getCustomerBalance());
+					log.info("customerEntity getCustomerPreviousBalance value >>>>>" + customerBalanceAmount);
 
-					log.info("customerEntity getCustomerPreviousBalance value >>>>>" + getCustomerPreviousBalance);
-
-					if (customerEntity.getCustomerBalance() != null) {
-						if (customerEntity.getCustomerBalance().compareTo(BigDecimal.ZERO) == 0) {
-							// Assuming Customer Balance is 0
-							totalAmountBalance = customerEntity.getCustomerBalance().add(totalCalculatedProductAmount);
-						} else if (customerEntity.getCustomerBalance().compareTo(BigDecimal.ZERO) > 0
-								&& customerEntity.getCustomerBalance().compareTo(totalCalculatedProductAmount) > 0) {
-							// Assuming customer Balance is Positive
-							totalAmountBalance = customerEntity.getCustomerBalance()
-									.subtract(totalCalculatedProductAmount);
-						} else if (customerEntity.getCustomerBalance().compareTo(BigDecimal.ZERO) > 0
-								&& customerEntity.getCustomerBalance().compareTo(totalCalculatedProductAmount) < 0) {
-							// Assuming customer Balance is Positive
-							totalAmountBalance = customerEntity.getCustomerBalance()
-									.subtract(totalCalculatedProductAmount);
-						} else if (customerEntity.getCustomerBalance().compareTo(BigDecimal.ZERO) < 0) {
-							// Assuming Customer Balance is negative
-							totalAmountBalance = totalCalculatedProductAmount
-									.add(customerEntity.getCustomerBalance().negate());
-							totalAmountBalance = totalAmountBalance.negate();
-						}
-
-						if (totalAmountBalance != null) {
-							log.info("totalAmountBalance value >>>>>" + totalAmountBalance.toString());
-							orderDtoToEntity.setTotalOrderAmount(totalAmountBalance);
-						}
-					}
-
-				} catch (Exception e) {
+					if (customerBalanceAmount != null) {
+						
+						  totalOrderInvoiceAmountBalance = OrderAllAmountCalcuationUtil.getCalculatedTotalInvoiceAmount(totalOrderInvoiceAmountBalance,
+								totalCalculatedProductPriceAmount, customerBalanceAmount);
+						  
+						   orderDtoToEntity.setTotalOrderAmount(totalOrderInvoiceAmountBalance);
+						   
+						   log.info("totalOrderInvoiceAmountBalance value >>>>>" + totalOrderInvoiceAmountBalance);
+						  
+						  }
+						
+					}  catch (Exception e) {
 					// TODO: handle exception
 				}
 
@@ -274,6 +338,8 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 			// throw exception here
 		}
 	}
+
+	
 
 	private CustomerEntity getCustomerDetailsById(Long customerId) {
 		CustomerEntity customerEntity;
