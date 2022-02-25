@@ -21,12 +21,12 @@ import com.manjunatha.zooplus.orderdetails.service.OrderPaymentService;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/order-payment-service")
+@RequestMapping("/order-payment-service") 
 @Slf4j
 public class OrderPaymentDetailsController {
 	
 	@Autowired 
-	OrderPaymentService orderPaymentService;
+	OrderPaymentService orderPaymentService; 
 	
 	//Rest Service 1: Post :Service to register an order
 	@PostMapping("/registerorder")
