@@ -19,7 +19,7 @@ public class OrderPaymentResponse {
 	
 	private String paymentDate;
 	
-	private String invoiceAmount;
+	private String productsPriceInvoiceAmount;
 	
 	private String paymentMode;
 	

@@ -30,7 +30,6 @@ public class OrderPaymentServiceUtil {
 				reduce((a, b) -> a.concat(",").concat(b)).get();
 		orderDtoToEntity.setProductId(orderProductId);
 		orderDtoToEntity.setCustomerId(Long.valueOf(orderDetailsRequest.getCustomerId()));
-		orderDtoToEntity.setTotalOrderAmount(new BigDecimal("0"));
 		orderDtoToEntity.setOrderDate(new Date());
 		orderDtoToEntity.setComments("Order Created Sucessfully");
 		orderDtoToEntity.setOrderStatus(1);
@@ -43,7 +42,8 @@ public class OrderPaymentServiceUtil {
 		orderEntityToDto.setOrderId(orderDetailsEntity.getId());
 		orderEntityToDto.setProductId(orderDetailsEntity.getProductId());
 		orderEntityToDto.setCustomerId(orderDetailsEntity.getCustomerId());
-		orderEntityToDto.setTotalOrderAmount(orderDetailsEntity.getTotalOrderAmount());
+		orderEntityToDto.setProductsPriceInvoiceAmount(orderDetailsEntity.getProductsPriceInvoiceAmount());
+		orderEntityToDto.setTotalProductsPriceInvoiceAmount(orderDetailsEntity.getTotalProductsPriceInvoiceAmount());
 		orderEntityToDto.setOrderDate(orderDetailsEntity.getOrderDate());
 		orderEntityToDto.setComments(orderDetailsEntity.getComments());
 		orderEntityToDto.setOrderStatus(orderDetailsEntity.getOrderStatus());
@@ -52,13 +52,13 @@ public class OrderPaymentServiceUtil {
 
 	public static OrderDetailsResponse convertOrderDtoToResponse(OrderDetailsInfoDto orderEntityToDto,String getCustomerPreviousBalance) {
 		
-		log.info("Print getCustomerPreviousBalance"+getCustomerPreviousBalance);
 		OrderDetailsResponse orderDetailsResponse = new OrderDetailsResponse();
 		orderDetailsResponse.setProductId(orderEntityToDto.getProductId());
 		orderDetailsResponse.setOrderId(orderEntityToDto.getOrderId().toString());
 		orderDetailsResponse.setComments(orderEntityToDto.getComments());
 		orderDetailsResponse.setOrderDate(new SimpleDateFormat("yyyy-MM-dd").format(orderEntityToDto.getOrderDate()));
-		orderDetailsResponse.setTotalOrderAmount(orderEntityToDto.getTotalOrderAmount().toString());
+		orderDetailsResponse.setProductsPriceInvoiceAmount(orderEntityToDto.getProductsPriceInvoiceAmount().toString());
+		orderDetailsResponse.setTotalProductsPriceInvoiceAmount(orderEntityToDto.getTotalProductsPriceInvoiceAmount().toString());
 		orderDetailsResponse.setOrderStatus(String.valueOf(orderEntityToDto.getOrderStatus()));
 		orderDetailsResponse.setCustomerId(orderEntityToDto.getCustomerId().toString());
 		orderDetailsResponse.setCustomerPreviousBalance(getCustomerPreviousBalance);
@@ -72,9 +72,7 @@ public class OrderPaymentServiceUtil {
 		orderPaymentInfoDto.setOrderId(Long.parseLong(orderPaymentRequest.getOrderId()));
 		orderPaymentInfoDto.setPaidAmount(new BigDecimal(orderPaymentRequest.getPaidAmount()));
 		orderPaymentInfoDto.setPaymentDate(new Date());
-		//orderPaymentInfoDto.setInvoiceAmount(new BigDecimal("0"));
 		orderPaymentInfoDto.setPaymentMode(orderPaymentRequest.getPaymentMode());
-		orderPaymentInfoDto.setOrderBalance(new BigDecimal("0"));
 		return orderPaymentInfoDto;
 	}
 
@@ -86,7 +84,7 @@ public class OrderPaymentServiceUtil {
 		orderPaymentInfoDto.setOrderId(orderPaymentEntity.getOrderId());
 		orderPaymentInfoDto.setCustomerId(orderPaymentEntity.getCustomerId());
 		orderPaymentInfoDto.setPaidAmount(orderPaymentEntity.getPaidAmount());
-		orderPaymentInfoDto.setInvoiceAmount(orderPaymentEntity.getInvoiceAmount());
+		orderPaymentInfoDto.setProductsPriceInvoiceAmount(orderPaymentEntity.getProductsPriceInvoiceAmount());
 		orderPaymentInfoDto.setPaymentDate(orderPaymentEntity.getPaymentDate());
 		orderPaymentInfoDto.setPaymentMode(orderPaymentEntity.getPaymentMode());
 		orderPaymentInfoDto.setOrderBalance(orderPaymentEntity.getOrderBalance());
@@ -101,7 +99,7 @@ public class OrderPaymentServiceUtil {
 		orderPaymentResponse.setOrderId(String.valueOf(orderPaymentEntityToDto.getOrderId()));
 		orderPaymentResponse.setPaidAmount(orderPaymentEntityToDto.getPaidAmount().toString());
 		orderPaymentResponse.setPaymentDate(new SimpleDateFormat("yyyy-MM-dd").format(orderPaymentEntityToDto.getPaymentDate()));
-		orderPaymentResponse.setInvoiceAmount(orderPaymentEntityToDto.getInvoiceAmount().toString());
+		orderPaymentResponse.setProductsPriceInvoiceAmount(orderPaymentEntityToDto.getProductsPriceInvoiceAmount().toString());
 		orderPaymentResponse.setPaymentMode(orderPaymentEntityToDto.getPaymentMode());
 		orderPaymentResponse.setOrderBalance(orderPaymentEntityToDto.getOrderBalance().toString());
 		return orderPaymentResponse;

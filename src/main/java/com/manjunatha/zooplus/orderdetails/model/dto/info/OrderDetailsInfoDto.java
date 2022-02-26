@@ -23,10 +23,12 @@ public class OrderDetailsInfoDto {
 
 	private int orderStatus;
 
-	private BigDecimal totalOrderAmount;
-	
 	private String comments;
 	
 	private BigDecimal customerPreviousBalance;
+	
+	private BigDecimal productsPriceInvoiceAmount;
+	
+	private BigDecimal totalProductsPriceInvoiceAmount;
 
 }

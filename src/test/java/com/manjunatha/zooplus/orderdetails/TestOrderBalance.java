@@ -6,49 +6,24 @@ public class TestOrderBalance {
 
 	public static void main(String[] args) {
 		
-		BigDecimal orderBalance = BigDecimal.ZERO;
-
-		BigDecimal paidAmount = new BigDecimal("0");
-		BigDecimal invoiceAmount = new BigDecimal("10");
+		BigDecimal orderBalance_OB = BigDecimal.ZERO;
+		BigDecimal paidAmount_PA = new BigDecimal("10");
+		BigDecimal producutPriceInvoiceAmount_PP = new BigDecimal("100");
 		//Considering always paid Amount is Positive
+		//OB = PA-PP;
+		
 
-		if (invoiceAmount.compareTo(BigDecimal.ZERO) == 0 && paidAmount.compareTo(BigDecimal.ZERO) > 0) {
-			// Assuming Customer Balance is 0
-				orderBalance = paidAmount.add(invoiceAmount);
-			} else if (invoiceAmount.compareTo(BigDecimal.ZERO) == 0 && paidAmount.compareTo(BigDecimal.ZERO) < 0) {
-				orderBalance = invoiceAmount.add(paidAmount.negate());
-				orderBalance = orderBalance.negate();
-				System.out.println("Condition SP1");
-			} else if (paidAmount.compareTo(BigDecimal.ZERO) == 0 && invoiceAmount.compareTo(BigDecimal.ZERO) < 0) {
-				orderBalance = paidAmount.add(invoiceAmount.negate());
-				orderBalance = orderBalance.negate();
-				System.out.println("Condition SP2");
-			}else if (paidAmount.compareTo(BigDecimal.ZERO) == 0 && invoiceAmount.compareTo(BigDecimal.ZERO) > 0) {
-				orderBalance = paidAmount.add(invoiceAmount.negate());
-				System.out.println("Condition SP3");
-			} else if(paidAmount.compareTo(BigDecimal.ZERO)< 0 && invoiceAmount.compareTo(BigDecimal.ZERO) < 0) {
-				System.out.println("Condition 1");
-				orderBalance = paidAmount.negate().add(invoiceAmount.negate());
-				orderBalance = orderBalance.negate();
-			} else if(paidAmount.compareTo(BigDecimal.ZERO)< 0 && invoiceAmount.compareTo(BigDecimal.ZERO)> 0) {
-				System.out.println("Condition 2");
-				orderBalance = invoiceAmount.add(paidAmount.negate());
-				orderBalance = orderBalance.negate();
-			} else if(paidAmount.compareTo(BigDecimal.ZERO)> 0 && invoiceAmount.compareTo(BigDecimal.ZERO) < 0) {
-				System.out.println("Condition 3");
-				orderBalance = invoiceAmount.negate().subtract(paidAmount);
-				orderBalance = orderBalance.negate();
-			} else if(paidAmount.compareTo(BigDecimal.ZERO)> 0 && invoiceAmount.compareTo(BigDecimal.ZERO) > 0 && paidAmount.compareTo(invoiceAmount) > 0) {
-				System.out.println("Condition 4");
-				orderBalance = paidAmount.subtract(invoiceAmount);
-			} else if(paidAmount.compareTo(BigDecimal.ZERO)> 0 && invoiceAmount.compareTo(BigDecimal.ZERO) > 0 && invoiceAmount.compareTo(paidAmount) > 0) {
-				System.out.println("Condition 5");
-				orderBalance = invoiceAmount.subtract(paidAmount);
-				orderBalance = orderBalance.negate();
-			}
+		if ((paidAmount_PA.compareTo(BigDecimal.ZERO) == 0 && producutPriceInvoiceAmount_PP.compareTo(BigDecimal.ZERO) > 0)
+				|| (producutPriceInvoiceAmount_PP.compareTo(BigDecimal.ZERO) == 0 && paidAmount_PA.compareTo(BigDecimal.ZERO) > 0)) {
+			System.out.println("Condition SP1");
+			orderBalance_OB = paidAmount_PA.subtract(producutPriceInvoiceAmount_PP);
+		} else if((paidAmount_PA.compareTo(BigDecimal.ZERO) > 0 && producutPriceInvoiceAmount_PP.compareTo(BigDecimal.ZERO) > 0 && paidAmount_PA.compareTo(producutPriceInvoiceAmount_PP) > 0)
+				|| (paidAmount_PA.compareTo(BigDecimal.ZERO) > 0 && producutPriceInvoiceAmount_PP.compareTo(BigDecimal.ZERO) > 0 && paidAmount_PA.compareTo(producutPriceInvoiceAmount_PP) < 0)) {
+			orderBalance_OB = paidAmount_PA.subtract(producutPriceInvoiceAmount_PP);
+		} 
 		// Display the result in BigDecimal
-		System.out.println("The sum of\n" + paidAmount + " \nand\n" + invoiceAmount + " " + "\nis\n"
-				+ orderBalance + "\n");
+		System.out.println("The sum of\n" + paidAmount_PA + " \nand\n" + producutPriceInvoiceAmount_PP + " " + "\nis\n"
+				+ orderBalance_OB + "\n");
 
 	}
 

@@ -22,7 +22,7 @@ public class OrderPaymentInfoDto {
 	
 	private BigDecimal paidAmount;
 	
-	private BigDecimal invoiceAmount;
+	private BigDecimal productsPriceInvoiceAmount;
 	
 	private BigDecimal orderBalance;
 	

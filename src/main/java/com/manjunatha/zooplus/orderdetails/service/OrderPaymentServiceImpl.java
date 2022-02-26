@@ -57,9 +57,9 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 
 		String getCustomerPreviousBalance = "";
 
-		BigDecimal totalOrderInvoiceAmountBalance = BigDecimal.ZERO;
+		BigDecimal totalPriceInvoiceAmount_TP = BigDecimal.ZERO;
 		
-		getOrderTotalAmount(orderDtoToEntity, getCustomerPreviousBalance,totalOrderInvoiceAmountBalance);
+		getOrderTotalAmount(orderDtoToEntity, getCustomerPreviousBalance,totalPriceInvoiceAmount_TP);
 		
 		if(getCustomerPreviousBalance.isEmpty() || getCustomerPreviousBalance == null) {
 			CustomerEntity customerEntity = getCustomerDetailsById(orderDtoToEntity.getCustomerId());
@@ -72,7 +72,8 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 
 		OrderDetailsEntity orderDetailsEntity = new OrderDetailsEntity(orderDtoToEntity.getCustomerId(),
 				orderDtoToEntity.getProductId(), orderDtoToEntity.getOrderDate(), orderDtoToEntity.getOrderStatus(),
-				orderDtoToEntity.getComments(), orderDtoToEntity.getTotalOrderAmount());
+				orderDtoToEntity.getComments(), orderDtoToEntity.getProductsPriceInvoiceAmount(),
+				orderDtoToEntity.getTotalProductsPriceInvoiceAmount());
 
 		log.info("Entering the orderDetailsEntity before Service orderDetailsEntity");
 
@@ -109,17 +110,20 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 		
 
 		log.info("Entering the orderPaymentRequest before Service request");
+		BigDecimal totalPriceInvoiceAmount_TP = BigDecimal.ZERO;
 
-		// Logic to get Invoice Amount logic Start
+		// Logic to  producutPriceInvoiceAmount_PP Amount logic Start
 		OrderDetailsEntity orderDetailsEntity;
 		try {
 
 			Optional<OrderDetailsEntity> orderInvoiceAmountEntity = orderDetailsRepository.findById(paymentDtoToEntity.getOrderId());
 
-			log.info("Entering OrderPaymentResponse OrderBalanceDetails.isPresent() method >>> " + orderInvoiceAmountEntity.isPresent());
+			log.info("Entering producutPriceInvoiceAmount_PP producutPriceInvoiceAmount_PP.isPresent() producutPriceInvoiceAmount_PP >>> " + orderInvoiceAmountEntity.isPresent());
 			if (orderInvoiceAmountEntity.isPresent()) {
 				orderDetailsEntity = orderInvoiceAmountEntity.get();
-				paymentDtoToEntity.setInvoiceAmount(orderDetailsEntity.getTotalOrderAmount());
+				paymentDtoToEntity.setProductsPriceInvoiceAmount(orderDetailsEntity.getProductsPriceInvoiceAmount());
+				totalPriceInvoiceAmount_TP = orderDetailsEntity.getTotalProductsPriceInvoiceAmount();
+				
 			} else {
 				return null;
 			}
@@ -128,21 +132,21 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 			// TODO: handle exception
 		}
 		
-		// Logic to get Invoice Amount logic Ends
+		// Logic to get producutPriceInvoiceAmount_PP Amount logic Ends
 		
-		//Calculate Order balance Amount Starts
+		//Calculate Order balance Amount 
 		
-		if(orderPaymentRequest.getPaidAmount()!=null && paymentDtoToEntity.getInvoiceAmount()!=null) {
+		if(orderPaymentRequest.getPaidAmount()!=null && paymentDtoToEntity.getProductsPriceInvoiceAmount()!=null) {
 			
 			log.info("Entering Order Balance Logic orderPaymentRequest.getPaidAmount() "+orderPaymentRequest.getPaidAmount() 
-			+"paymentDtoToEntity.getInvoiceAmount()" + paymentDtoToEntity.getInvoiceAmount());
+			+"paymentDtoToEntity.getProductsPriceInvoiceAmount()" + paymentDtoToEntity.getProductsPriceInvoiceAmount());
 			
-			BigDecimal getCalculatedOrderBalance = OrderAllAmountCalcuationUtil.getCalculatedOrderBalance(paymentDtoToEntity);
+			BigDecimal getorderBalance_OB = OrderAllAmountCalcuationUtil.getCalculatedOrderBalance(paymentDtoToEntity);
 			
-			log.info("getCalculatedOrderBalance Order Balance Logic orderPaymentRequest.getPaidAmount()"+ getCalculatedOrderBalance);
+			log.info("getorderBalance_OB Order Balance getorderBalance_OB>>> "+ getorderBalance_OB);
 			
-			if(getCalculatedOrderBalance!=null) {
-				paymentDtoToEntity.setOrderBalance(getCalculatedOrderBalance);
+			if(getorderBalance_OB!=null) {
+				paymentDtoToEntity.setOrderBalance(getorderBalance_OB);
 			}
 		}
 		
@@ -151,12 +155,10 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 
 		//Logic to Calculate UpdateCustomerbalance Starts
 		
-			BigDecimal customerBalanceToUpdate = BigDecimal.ZERO;
-			
-		 if(paymentDtoToEntity.getCustomerId()!=null && paymentDtoToEntity.getOrderBalance()!=null) {
+		 if(paymentDtoToEntity.getCustomerId()!=null && totalPriceInvoiceAmount_TP !=null) {
 			 
-			 BigDecimal customerBalanceAmount = BigDecimal.ZERO;
-			 BigDecimal customerOrderAmount = paymentDtoToEntity.getOrderBalance();
+			 BigDecimal customerBalance_CB = BigDecimal.ZERO;
+			 BigDecimal paidAmount_PA = paymentDtoToEntity.getPaidAmount();
 			 
 			 CustomerEntity customerEntity;
 			 
@@ -165,18 +167,18 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 					log.info("Entering getCustomerBalanceEntity getCustomerBalanceEntity >>> " + getCustomerBalanceEntity.toString() + "getCustomerBalanceEntity" + getCustomerBalanceEntity);
 					if (getCustomerBalanceEntity.isPresent()) {
 						customerEntity = getCustomerBalanceEntity.get();
-						customerBalanceAmount = customerEntity.getCustomerBalance();
+						customerBalance_CB = customerEntity.getCustomerBalance();
 						
-						log.info("getUpdatedCustomerBalance Before>>>" + customerBalanceAmount + " "+ customerOrderAmount  + " " +customerBalanceToUpdate);
-						customerBalanceToUpdate =  OrderAllAmountCalcuationUtil.getUpdatedCustomerBalance(customerBalanceAmount, customerOrderAmount,customerBalanceToUpdate);
-						log.info("getUpdatedCustomerBalance End<<<<" + customerBalanceAmount + " "+customerOrderAmount  + " " + customerBalanceToUpdate);
+						log.info("customerBalance_CB Before>>>" + customerBalance_CB + " "+ paidAmount_PA  + " " + totalPriceInvoiceAmount_TP);
+						customerBalance_CB =  OrderAllAmountCalcuationUtil.getUpdatedCustomerBalance(customerBalance_CB,paidAmount_PA,totalPriceInvoiceAmount_TP);
+						log.info("getUpdatedCustomerBalance customerBalance_CB<<<<" + customerBalance_CB + " "+paidAmount_PA  + " " + totalPriceInvoiceAmount_TP);
 					 
 						try {
-							 if(customerBalanceToUpdate!=null) {
-								 log.info("getUpdatedCustomerBalance Before>>>" +customerBalanceToUpdate + "getCustomerBalanceEntity" +getCustomerBalanceEntity);
-								 customerEntity.setCustomerBalance(customerBalanceToUpdate);
+							 if(customerBalance_CB!=null) {
+								 log.info("getUpdatedCustomerBalance Before>>>" +customerBalance_CB + "getCustomerBalanceEntity" +getCustomerBalanceEntity);
+								 customerEntity.setCustomerBalance(customerBalance_CB);
 								 customerDetailsRepository.save(customerEntity);
-								 log.info("getUpdatedCustomerBalance Exit>>>" +customerBalanceToUpdate);
+								 log.info("getUpdatedCustomerBalance Exit>>>" +customerBalance_CB);
 							 }
 							
 							} catch (Exception e) {
@@ -208,7 +210,7 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 				
 				 orderPaymentEntity = new PaymentEntity(paymentDtoToEntity.getCustomerId(),
 						paymentDtoToEntity.getOrderId(), paymentDtoToEntity.getPaymentDate(),
-						paymentDtoToEntity.getPaidAmount(), paymentDtoToEntity.getInvoiceAmount(),
+						paymentDtoToEntity.getPaidAmount(), paymentDtoToEntity.getProductsPriceInvoiceAmount(),
 						paymentDtoToEntity.getOrderBalance(), orderPaymentRequest.getPaymentMode());
 
 				log.info("Entering the orderPaymentEntity before Service orderDetailsEntity");
@@ -285,12 +287,12 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 		return OrderPaymentServiceUtil.convertCustomerEntityResponse(customerEntity);
 	}
 
-	private void getOrderTotalAmount(OrderDetailsInfoDto orderDtoToEntity, String getCustomerPreviousBalance, BigDecimal totalOrderInvoiceAmountBalance) {
+	private void getOrderTotalAmount(OrderDetailsInfoDto orderDtoToEntity, String getCustomerPreviousBalance, BigDecimal totalPriceInvoiceAmount_TP) {
 
-		List<String> productIdList = Stream.of(orderDtoToEntity.getProductId().split(",")).collect(Collectors.toList());
+		 List<String> productIdList = Stream.of(orderDtoToEntity.getProductId().split(",")).collect(Collectors.toList());
 
-		BigDecimal totalCalculatedProductPriceAmount;
-		BigDecimal customerBalanceAmount;
+		  BigDecimal producutPriceInvoiceAmount_PP; 
+		  BigDecimal customerBalanceAmount_CB ;
 
 		try {
 
@@ -299,33 +301,34 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 			List<BigDecimal> productPriceList = productPriceListDetails.stream().map(ProductEntity::getProductPrice)
 					.collect(Collectors.toList());
 
-			totalCalculatedProductPriceAmount = productPriceList.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+			producutPriceInvoiceAmount_PP = productPriceList.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
 
-			log.info("totalCalculatedProductAmount value" + totalCalculatedProductPriceAmount);
+			log.info("producutPriceInvoiceAmount_PP value" + producutPriceInvoiceAmount_PP);
 
-			if (totalCalculatedProductPriceAmount != null) {
+			if (producutPriceInvoiceAmount_PP != null) {
+				
+				orderDtoToEntity.setProductsPriceInvoiceAmount(producutPriceInvoiceAmount_PP);
 
 				try {
 
 					CustomerEntity customerEntity = getCustomerDetailsById(orderDtoToEntity.getCustomerId());
 
-					customerBalanceAmount = customerEntity.getCustomerBalance();
+					customerBalanceAmount_CB = customerEntity.getCustomerBalance();
 
-					log.info("customerEntity getCustomerPreviousBalance value >>>>>" + customerBalanceAmount);
+					log.info("customerEntity customerBalanceAmount_CB value >>>>>" + customerBalanceAmount_CB);
 
-					if (customerBalanceAmount != null) {
+					if (customerBalanceAmount_CB != null) {
 						
-						  totalOrderInvoiceAmountBalance = OrderAllAmountCalcuationUtil.getCalculatedTotalInvoiceAmount(totalOrderInvoiceAmountBalance,
-								totalCalculatedProductPriceAmount, customerBalanceAmount);
+						totalPriceInvoiceAmount_TP = OrderAllAmountCalcuationUtil.getCalculatedTotalInvoiceAmount(totalPriceInvoiceAmount_TP,producutPriceInvoiceAmount_PP,
+								customerBalanceAmount_CB);
 						  
-						   orderDtoToEntity.setTotalOrderAmount(totalOrderInvoiceAmountBalance);
+						   orderDtoToEntity.setTotalProductsPriceInvoiceAmount(totalPriceInvoiceAmount_TP);
 						   
-						   log.info("totalOrderInvoiceAmountBalance value >>>>>" + totalOrderInvoiceAmountBalance);
+						   log.info("setTotalProductsPriceInvoiceAmount value >>>>>" + totalPriceInvoiceAmount_TP);
 						  
 						  }
-						
+					
 					}  catch (Exception e) {
-					// TODO: handle exception
 				}
 
 			} else {

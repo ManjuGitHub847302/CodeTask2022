@@ -48,17 +48,21 @@ public class OrderDetailsEntity {
 	@Column(name = "COMMENTS")
 	private String comments;
 
-	@Column(name="TOTAL_ORDER_AMOUNT")
-	private BigDecimal totalOrderAmount;
+	@Column(name="PRODUCTS_PRICES_AMOUNT")
+	private BigDecimal productsPriceInvoiceAmount;
+	
+	@Column(name="TOTAL_PRODUCT_AMOUNT")
+	private BigDecimal totalProductsPriceInvoiceAmount;
 
 	public OrderDetailsEntity(Long customerId, String productId, Date orderDate, int orderStatus, String comments, 
-			BigDecimal totalOrderAmount) {
+			BigDecimal productsPriceInvoiceAmount,BigDecimal totalProductsPriceInvoiceAmount) {
 		this.customerId = customerId;
 		this.productId = productId;
 		this.orderDate = orderDate;
 		this.orderStatus = orderStatus;
 		this.comments = comments;
-		this.totalOrderAmount = totalOrderAmount;
+		this.productsPriceInvoiceAmount = productsPriceInvoiceAmount;
+		this.totalProductsPriceInvoiceAmount = totalProductsPriceInvoiceAmount;
 	}
 	
 	

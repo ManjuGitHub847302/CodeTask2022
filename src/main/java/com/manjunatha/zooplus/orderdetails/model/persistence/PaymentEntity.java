@@ -46,23 +46,23 @@ public class PaymentEntity {
 	@Column(name="PAID_AMOUNT")
 	private BigDecimal paidAmount;
 	
-	@Column(name="INVOICE_AMOUNT")
-	private BigDecimal invoiceAmount;
-	
 	@Column(name="ORDER_BALANCE")
 	private BigDecimal orderBalance;
 	
 	@Column(name = "PAYMENT_MODE")
 	private String paymentMode;
 	
+	@Column(name="PRODUCTS_PRICES_AMOUNT")
+	private BigDecimal productsPriceInvoiceAmount;
+	
 
-	public PaymentEntity(Long customerId, Long orderId, Date paymentDate, BigDecimal paidAmount, BigDecimal invoiceAmount,
+	public PaymentEntity(Long customerId, Long orderId, Date paymentDate, BigDecimal paidAmount, BigDecimal productsPriceInvoiceAmount,
 			BigDecimal orderBalance,String paymentMode) {
 		this.customerId = customerId;
 		this.orderId = orderId;
 		this.paymentDate = paymentDate;
 		this.paidAmount = paidAmount;
-		this.invoiceAmount = invoiceAmount;
+		this.productsPriceInvoiceAmount = productsPriceInvoiceAmount;
 		this.orderBalance = orderBalance;
 		this.paymentMode = paymentMode;
 	}

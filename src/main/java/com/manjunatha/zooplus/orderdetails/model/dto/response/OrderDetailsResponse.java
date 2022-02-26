@@ -1,6 +1,7 @@
 package com.manjunatha.zooplus.orderdetails.model.dto.response;
 
 
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,8 +16,6 @@ public class OrderDetailsResponse {
 	
 	private String customerId;
 	
-	private String totalOrderAmount;
-	
 	private String orderDate;
 
 	private String orderStatus;
@@ -26,6 +25,10 @@ public class OrderDetailsResponse {
 	private String productId;
 	
 	private String customerPreviousBalance;
+	
+	private String productsPriceInvoiceAmount;
+	
+	private String totalProductsPriceInvoiceAmount;
 
 
 }
