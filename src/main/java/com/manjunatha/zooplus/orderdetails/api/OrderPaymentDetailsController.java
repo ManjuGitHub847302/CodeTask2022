@@ -29,7 +29,7 @@ public class OrderPaymentDetailsController {
 	OrderPaymentService orderPaymentService; 
 	
 	//Rest Service 1: Post :Service to register an order
-	@PostMapping("/registerorder")
+	@PostMapping("/order")
 	public ResponseEntity<OrderDetailsResponse> registerOrder(@RequestBody OrderDetailsRequest orderDetailsRequest) {
 		
 		log.info("Entering the registerOrder method >>>" + orderDetailsRequest);
@@ -41,7 +41,7 @@ public class OrderPaymentDetailsController {
 	
 	//Rest Service 2: Post : Service to register the payment of order
 	
-	@PostMapping("/registerpayment")
+	@PostMapping("/paymentMethod")
 	public ResponseEntity<OrderPaymentResponse> registerPayment(@RequestBody OrderPaymentRequest orderPaymentRequest) {
 		
 		log.info("Entering the registerOrder method >>>" + orderPaymentRequest);
@@ -51,7 +51,7 @@ public class OrderPaymentDetailsController {
 	  }
 	
 	//Rest Service 3: Get : Service to get the order balance
-	@GetMapping("/getorderbalance/orderId/{orderId}")
+	@GetMapping("/order/balance/{orderId}")
 	public ResponseEntity<OrderBalanceResponse> getOrderBalance(@PathVariable (name="orderId") String orderId) {
 		
 		log.info("Entering the orderBalance method >>>" + orderId);
@@ -61,7 +61,7 @@ public class OrderPaymentDetailsController {
 	  }
 	
 	//Rest Service 4: Get : Service to get the Customer balance
-	@GetMapping("/getcustomerbalance/customerId/{customerId}")
+	@GetMapping("/customer/balance/{customerId}")
 	public ResponseEntity<CustomerBalanceResponse> getCustomerBalance(@PathVariable (name="customerId") String customerId) {
 		
 		log.info("Entering the customerBalanceResponse method >>>" + customerId);

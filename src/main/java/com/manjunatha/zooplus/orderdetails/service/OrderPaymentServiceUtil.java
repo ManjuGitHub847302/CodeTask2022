@@ -17,13 +17,10 @@ import com.manjunatha.zooplus.orderdetails.model.persistence.CustomerEntity;
 import com.manjunatha.zooplus.orderdetails.model.persistence.OrderDetailsEntity;
 import com.manjunatha.zooplus.orderdetails.model.persistence.PaymentEntity;
 
-import lombok.extern.slf4j.Slf4j;
 
-
-@Slf4j
 public class OrderPaymentServiceUtil {
 	
-	public static OrderDetailsInfoDto convertOrderDtoEntity(OrderDetailsRequest orderDetailsRequest) {
+	public static OrderDetailsInfoDto convertRequestToDto(OrderDetailsRequest orderDetailsRequest) {
 		
 		OrderDetailsInfoDto orderDtoToEntity = new OrderDetailsInfoDto();
 		String orderProductId = Arrays.stream(orderDetailsRequest.getProductId()).mapToObj(String::valueOf).

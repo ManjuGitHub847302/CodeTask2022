@@ -18,24 +18,24 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class SwaggerConfig {
   
   @Bean 
-  public Docket getDocket() {
+	  public Docket getDocket() {
+	  
+	  return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.any())
+	  .paths(PathSelectors.any()).build().apiInfo(getApiInfo());
+			  
+	  }
   
-  return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.any())
-  .paths(PathSelectors.any()).build().apiInfo(getApiInfo());
+	  private ApiInfo getApiInfo() {
 		  
-  }
-  
-  private ApiInfo getApiInfo() {
+	  return new ApiInfoBuilder().title("Order Payment Details Application").description("Order Payment Details API Documentation").version("1.0").build(); 
 	  
-  return new ApiInfoBuilder().title("Order Payment Details Application")
-  .description("Order Payment Details API Documentation").version("1.0").build(); 
+	  }
   
-  }
-  
-  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+	  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		  
+	  registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+	  registry.addResourceHandler("/webjars/**") .addResourceLocations("classpath:/META-INF/resources/webjars/"); 
 	  
-  registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
-  
-  registry.addResourceHandler("/webjars/**") .addResourceLocations("classpath:/META-INF/resources/webjars/"); }
-  
-  }
+	  }
+	  
+}
