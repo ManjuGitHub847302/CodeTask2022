@@ -25,7 +25,7 @@ public class OrderPaymentRequest {
 	@ApiModelProperty(value = "Order Id")
 	private Long orderId;
 	
-    @DecimalMin(value = "1.00",message = "Please add Valid Paid Amount")
+    @DecimalMin(value = "1.00",message = "Please add Valid Paid Amount and Other Details")
 	private BigDecimal paidAmount;
 	
     @ApiModelProperty(value = "Payment Mode")

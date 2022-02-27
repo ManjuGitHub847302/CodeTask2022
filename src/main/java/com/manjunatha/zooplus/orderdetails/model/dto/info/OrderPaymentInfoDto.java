@@ -27,5 +27,5 @@ public class OrderPaymentInfoDto {
 	private BigDecimal orderBalance;
 	
 	private String paymentMode;
-
+	
 }

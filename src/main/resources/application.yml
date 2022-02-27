@@ -2,4 +2,4 @@ server:
   port: 9094
 spring:
   profiles:
-    active: ct
+    active: dev

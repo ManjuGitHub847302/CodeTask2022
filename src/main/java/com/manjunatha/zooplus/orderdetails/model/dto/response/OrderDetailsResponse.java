@@ -24,7 +24,7 @@ public class OrderDetailsResponse {
 	
 	private String productId;
 	
-	private String customerPreviousBalance;
+	private String customerBalance;
 	
 	private String productsPriceInvoiceAmount;
 	

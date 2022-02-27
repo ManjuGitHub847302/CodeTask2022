@@ -25,5 +25,7 @@ public class OrderPaymentResponse {
 	
 	private String orderBalance;
 	
+	private String customerBalance;
+	
 
 }

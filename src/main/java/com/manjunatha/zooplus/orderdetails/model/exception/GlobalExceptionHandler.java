@@ -1,12 +1,8 @@
 package com.manjunatha.zooplus.orderdetails.model.exception;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.ConstraintViolationException;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -36,8 +32,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
 
 	
 	  @ExceptionHandler(HandleApiErrorException.class) 
-	  public
-	  ResponseEntity<ErrorDetailsInfoDto> handleApiErrorException(HandleApiErrorException exception, WebRequest webRequest)
+	  public ResponseEntity<ErrorDetailsInfoDto> handleApiErrorException(HandleApiErrorException exception, WebRequest webRequest)
 	  { 
 		  ErrorDetailsInfoDto errorDetails = new ErrorDetailsInfoDto(new Date(), exception.getMessage(),webRequest.getDescription(false)); 
 		  return new ResponseEntity<>(errorDetails,HttpStatus.BAD_REQUEST); }
@@ -45,8 +40,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
     
     // global exceptions
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorDetailsInfoDto> handleGlobalException(Exception exception,
-                                                               WebRequest webRequest){
+    public ResponseEntity<ErrorDetailsInfoDto> handleGlobalException(Exception exception,WebRequest webRequest){
     	ErrorDetailsInfoDto errorDetails = new ErrorDetailsInfoDto(new Date(), exception.getMessage(),
                 webRequest.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -54,7 +48,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
     
     
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,HttpHeaders headers,HttpStatus status,WebRequest request) 
+    public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,HttpHeaders headers,HttpStatus status,WebRequest request) 
     {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) ->{
@@ -66,9 +60,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
     
-    @ExceptionHandler(ConstraintViolationException.class)
-    public void constraintViolationException(HttpServletResponse response) throws IOException {
-        response.sendError(HttpStatus.BAD_REQUEST.value());
-    }
 
+   
 }

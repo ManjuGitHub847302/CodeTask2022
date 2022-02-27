@@ -61,7 +61,7 @@ public class OrderPaymentServiceUtil {
 		orderDetailsResponse.setTotalProductsPriceInvoiceAmount(orderEntityToDto.getTotalProductsPriceInvoiceAmount().toString());
 		orderDetailsResponse.setOrderStatus(String.valueOf(orderEntityToDto.getOrderStatus()));
 		orderDetailsResponse.setCustomerId(orderEntityToDto.getCustomerId().toString());
-		orderDetailsResponse.setCustomerPreviousBalance(getCustomerPreviousBalance);
+		orderDetailsResponse.setCustomerBalance(getCustomerPreviousBalance);
 		return orderDetailsResponse;
 	}
 
@@ -91,7 +91,7 @@ public class OrderPaymentServiceUtil {
 		return orderPaymentInfoDto;
 	}
 
-	public static OrderPaymentResponse convertPaymentDtoToResponse(OrderPaymentInfoDto orderPaymentEntityToDto) {
+	public static OrderPaymentResponse convertPaymentDtoToResponse(OrderPaymentInfoDto orderPaymentEntityToDto , String getCutomerUpdatedBalance ) {
 		
 		OrderPaymentResponse orderPaymentResponse = new OrderPaymentResponse();
 		orderPaymentResponse.setCustomerId(String.valueOf(orderPaymentEntityToDto.getCustomerId()));
@@ -102,6 +102,7 @@ public class OrderPaymentServiceUtil {
 		orderPaymentResponse.setProductsPriceInvoiceAmount(orderPaymentEntityToDto.getProductsPriceInvoiceAmount().toString());
 		orderPaymentResponse.setPaymentMode(orderPaymentEntityToDto.getPaymentMode());
 		orderPaymentResponse.setOrderBalance(orderPaymentEntityToDto.getOrderBalance().toString());
+		orderPaymentResponse.setCustomerBalance(getCutomerUpdatedBalance);
 		return orderPaymentResponse;
 	}
 
