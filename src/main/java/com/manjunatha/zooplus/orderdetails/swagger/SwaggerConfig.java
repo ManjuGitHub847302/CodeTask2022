@@ -17,18 +17,17 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2  
 public class SwaggerConfig {
   
-  @Bean 
+	   @Bean 
 	  public Docket getDocket() {
 	  
-	  return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.any())
+	   return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.any())
 	  .paths(PathSelectors.any()).build().apiInfo(getApiInfo());
 			  
 	  }
   
 	  private ApiInfo getApiInfo() {
-		  
-	  return new ApiInfoBuilder().title("Order Payment Details Application").description("Order Payment Details API Documentation").version("1.0").build(); 
-	  
+	  return new ApiInfoBuilder().title("Order Payment Details Application").
+			  description("Order Payment Details API Documentation").version("1.0").build(); 
 	  }
   
 	  public void addResourceHandlers(ResourceHandlerRegistry registry) {

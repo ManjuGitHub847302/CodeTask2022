@@ -39,18 +39,18 @@ public class PaymentEntity {
 	@Column(name="ORDER_ID")
 	private Long orderId;
 	
-	@Column(name="PAYMENT_DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date paymentDate;
+	@Column(name = "PAYMENT_MODE")
+	private String paymentMode;
 	
 	@Column(name="PAID_AMOUNT")
 	private BigDecimal paidAmount;
 	
+	@Column(name="PAYMENT_DATE")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date paymentDate;
+	
 	@Column(name="ORDER_BALANCE")
 	private BigDecimal orderBalance;
-	
-	@Column(name = "PAYMENT_MODE")
-	private String paymentMode;
 	
 	@Column(name="PRODUCTS_PRICES_AMOUNT")
 	private BigDecimal productsPriceInvoiceAmount;

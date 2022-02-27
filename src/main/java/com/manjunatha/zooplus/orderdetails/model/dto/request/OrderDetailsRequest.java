@@ -1,8 +1,8 @@
 package com.manjunatha.zooplus.orderdetails.model.dto.request;
 
 
-import com.sun.istack.NotNull;
-
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,14 +11,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-
+@ApiModel(description = "OrderDetailsRequest model information")
 public class OrderDetailsRequest  {
 	
-	@NotNull
+	
+	@ApiModelProperty(value = "productId")
 	private int[] productId;
 	
 	
-	@NotNull
-	private String customerId;
+	@ApiModelProperty(value = "customerId")
+	private Long customerId;
 	
 }

@@ -1,9 +1,11 @@
-package com.manjunatha.zooplus.orderdetails.service;
+package com.manjunatha.zooplus.orderdetails.service.util;
 
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
 
 import com.manjunatha.zooplus.orderdetails.model.dto.info.OrderDetailsInfoDto;
 import com.manjunatha.zooplus.orderdetails.model.dto.info.OrderPaymentInfoDto;
@@ -13,6 +15,7 @@ import com.manjunatha.zooplus.orderdetails.model.dto.response.CustomerBalanceRes
 import com.manjunatha.zooplus.orderdetails.model.dto.response.OrderBalanceResponse;
 import com.manjunatha.zooplus.orderdetails.model.dto.response.OrderDetailsResponse;
 import com.manjunatha.zooplus.orderdetails.model.dto.response.OrderPaymentResponse;
+import com.manjunatha.zooplus.orderdetails.model.exception.HandleApiErrorException;
 import com.manjunatha.zooplus.orderdetails.model.persistence.CustomerEntity;
 import com.manjunatha.zooplus.orderdetails.model.persistence.OrderDetailsEntity;
 import com.manjunatha.zooplus.orderdetails.model.persistence.PaymentEntity;
@@ -50,7 +53,7 @@ public class OrderPaymentServiceUtil {
 	public static OrderDetailsResponse convertOrderDtoToResponse(OrderDetailsInfoDto orderEntityToDto,String getCustomerPreviousBalance) {
 		
 		OrderDetailsResponse orderDetailsResponse = new OrderDetailsResponse();
-		orderDetailsResponse.setProductId(orderEntityToDto.getProductId());
+		orderDetailsResponse.setProductId(orderEntityToDto.getProductId().toString());
 		orderDetailsResponse.setOrderId(orderEntityToDto.getOrderId().toString());
 		orderDetailsResponse.setComments(orderEntityToDto.getComments());
 		orderDetailsResponse.setOrderDate(new SimpleDateFormat("yyyy-MM-dd").format(orderEntityToDto.getOrderDate()));
@@ -65,9 +68,9 @@ public class OrderPaymentServiceUtil {
 	public static OrderPaymentInfoDto convertpaymentDtoEntity(OrderPaymentRequest orderPaymentRequest) {
 		
 		OrderPaymentInfoDto orderPaymentInfoDto = new OrderPaymentInfoDto();
-		orderPaymentInfoDto.setCustomerId(Long.parseLong(orderPaymentRequest.getCustomerId()));
-		orderPaymentInfoDto.setOrderId(Long.parseLong(orderPaymentRequest.getOrderId()));
-		orderPaymentInfoDto.setPaidAmount(new BigDecimal(orderPaymentRequest.getPaidAmount()));
+		orderPaymentInfoDto.setCustomerId(orderPaymentRequest.getCustomerId());
+		orderPaymentInfoDto.setOrderId(orderPaymentRequest.getOrderId());
+		orderPaymentInfoDto.setPaidAmount(orderPaymentRequest.getPaidAmount());
 		orderPaymentInfoDto.setPaymentDate(new Date());
 		orderPaymentInfoDto.setPaymentMode(orderPaymentRequest.getPaymentMode());
 		return orderPaymentInfoDto;
@@ -116,5 +119,22 @@ public class OrderPaymentServiceUtil {
 		return customerBalanceResponse;
 	}
 
+	public static OrderPaymentRequest validatePaymentRequestParmater(OrderPaymentRequest orderPaymentRequest) {
+		if(orderPaymentRequest.getCustomerId().longValue() < 1) {
+			throw new HandleApiErrorException(HttpStatus.BAD_REQUEST, "Customer Id cannot be Negative or 0");
+		}
+		
+		if(orderPaymentRequest.getOrderId() < 1) {
+			throw new HandleApiErrorException(HttpStatus.BAD_REQUEST, " Order Id cannot be Negative or 0");
+		}
+		
+		 if(!orderPaymentRequest.getPaymentMode().isEmpty()) {
+			List<String> paymentMode = Arrays.asList("Credit Card", "PayPal", "GiroPay", "Sofort Banking","Cash in Advance");
+			if(!paymentMode.contains(orderPaymentRequest.getPaymentMode())){
+				throw new HandleApiErrorException(HttpStatus.BAD_REQUEST, "Payment Mode can Only be Credit Card or PayPal or GiroPay or Sofort Banking or Cash in Advance");
+			}
+		}
+		return orderPaymentRequest;
+	}
 	
 }

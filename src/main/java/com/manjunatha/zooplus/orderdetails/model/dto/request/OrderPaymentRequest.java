@@ -1,7 +1,11 @@
 package com.manjunatha.zooplus.orderdetails.model.dto.request;
 
-import com.sun.istack.NotNull;
+import java.math.BigDecimal;
 
+import javax.validation.constraints.DecimalMin;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,18 +15,20 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 
+@ApiModel(description = "OrderPaymentRequest model information")
 public class OrderPaymentRequest {
 	
-	@NotNull
-	private String customerId;
 	
-	@NotNull
-	private String orderId;
+	@ApiModelProperty(value = "CustomerId")
+	private Long customerId;
 	
-	@NotNull
-	private String paidAmount;
+	@ApiModelProperty(value = "Order Id")
+	private Long orderId;
 	
-	@NotNull
+    @DecimalMin(value = "1.00",message = "Please add Valid Paid Amount")
+	private BigDecimal paidAmount;
+	
+    @ApiModelProperty(value = "Payment Mode")
 	private String paymentMode;
 
 }

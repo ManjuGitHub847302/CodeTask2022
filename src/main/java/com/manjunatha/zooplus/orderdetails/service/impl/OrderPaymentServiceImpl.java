@@ -1,4 +1,4 @@
-package com.manjunatha.zooplus.orderdetails.service;
+package com.manjunatha.zooplus.orderdetails.service.impl;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 import javax.persistence.EntityExistsException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.manjunatha.zooplus.orderdetails.model.dto.info.OrderDetailsInfoDto;
@@ -19,6 +20,8 @@ import com.manjunatha.zooplus.orderdetails.model.dto.response.CustomerBalanceRes
 import com.manjunatha.zooplus.orderdetails.model.dto.response.OrderBalanceResponse;
 import com.manjunatha.zooplus.orderdetails.model.dto.response.OrderDetailsResponse;
 import com.manjunatha.zooplus.orderdetails.model.dto.response.OrderPaymentResponse;
+import com.manjunatha.zooplus.orderdetails.model.exception.HandleApiErrorException;
+import com.manjunatha.zooplus.orderdetails.model.exception.ResourceNotFoundException;
 import com.manjunatha.zooplus.orderdetails.model.persistence.CustomerEntity;
 import com.manjunatha.zooplus.orderdetails.model.persistence.OrderDetailsEntity;
 import com.manjunatha.zooplus.orderdetails.model.persistence.PaymentEntity;
@@ -27,6 +30,9 @@ import com.manjunatha.zooplus.orderdetails.repository.CustomerRepository;
 import com.manjunatha.zooplus.orderdetails.repository.OrderDetailsRepository;
 import com.manjunatha.zooplus.orderdetails.repository.OrderPaymentRepository;
 import com.manjunatha.zooplus.orderdetails.repository.ProductRepository;
+import com.manjunatha.zooplus.orderdetails.service.OrderPaymentService;
+import com.manjunatha.zooplus.orderdetails.service.util.OrderAllAmountCalcuationUtil;
+import com.manjunatha.zooplus.orderdetails.service.util.OrderPaymentServiceUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,6 +60,9 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 	public OrderDetailsResponse registerOrder(OrderDetailsRequest orderDetailsRequest) {
 
 		log.info("Entering the OrderDetailsResponse method" + orderDetailsRequest.toString());
+		
+		validateRequestOrderDetails(orderDetailsRequest);
+		
 
 		OrderDetailsInfoDto orderDtoToEntity = OrderPaymentServiceUtil.convertRequestToDto(orderDetailsRequest);
 
@@ -84,11 +93,11 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 	
 	
 	@Override
-	public CustomerBalanceResponse getCustomerBalance(String customerId) {
+	public CustomerBalanceResponse getCustomerBalance(Long customerId) {
 
 		log.info("Entering customerId getCustomerBalance method >>>" + customerId);
 
-		CustomerEntity customerEntity = getCustomerDetailsById(Long.parseLong(customerId));
+		CustomerEntity customerEntity = getCustomerDetailsById(customerId);
 
 		log.info("Exit  getCustomerBalance  method >>>" + customerEntity);
 
@@ -99,6 +108,10 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 	public OrderPaymentResponse registerPayment(OrderPaymentRequest orderPaymentRequest) {
 
 		log.info("Entering the orderPaymentRequest method" + orderPaymentRequest.toString());
+		
+		orderPaymentRequest = OrderPaymentServiceUtil.validatePaymentRequestParmater(orderPaymentRequest);
+		
+		//orderPaymentRequest = validateOrderPaymentRequest(orderPaymentRequest);
 		
 		OrderPaymentResponse orderPaymentResponse = new OrderPaymentResponse();
 
@@ -137,9 +150,11 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 		return orderPaymentResponse;
 		 
 	}
+
+	
 	
 	@Override
-	public OrderBalanceResponse getOrderBalance(String orderId) {
+	public OrderBalanceResponse getOrderBalance(Long orderId) {
 
 		log.info("Entering OrderPaymentResponse getOrderBalance method >>>" + orderId);
 
@@ -147,16 +162,14 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 		PaymentEntity paymentEntity;
 
 		Optional<PaymentEntity> OrderBalanceDetails = orderPaymentRepository
-				.findOrderBalanceByOrderId(Long.parseLong(orderId));
+				.findOrderBalanceByOrderId(orderId);
 
 		log.info("Entering OrderPaymentResponse OrderBalanceDetails.isPresent() method >>> "
 				+ OrderBalanceDetails.isPresent());
 		if (OrderBalanceDetails.isPresent()) {
 			paymentEntity = OrderBalanceDetails.get();
-			// orderPaymentResponse =
-			// OrderPaymentServiceUtil.convertPaymentEntityResponse(paymentEntity);
 		} else {
-			return null;
+			throw new ResourceNotFoundException("OrderDetails", "OrderId", orderId);
 		}
 
 		log.info("Exit Response method >>> " + OrderPaymentServiceUtil.convertPaymentEntityResponse(paymentEntity));
@@ -179,7 +192,7 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 				orderDtoToEntity.getComments(), orderDtoToEntity.getProductsPriceInvoiceAmount(),
 				orderDtoToEntity.getTotalProductsPriceInvoiceAmount());
 
-		log.info("Entering the orderDetailsEntity before Service orderDetailsEntity");
+		log.info("Entering the orderDetailsEntity before Service orderDetailsEntity >>" + orderDetailsEntity.toString());
 
 		try {
 
@@ -240,9 +253,9 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 				return OrderPaymentServiceUtil.convertPaymentDtoToResponse(OrderPaymentServiceUtil.convertPaymentEntityToDto(orderPaymentEntity));
 			} else {
 				log.error("Payment Cannot be done for the same order Id");
+				throw new HandleApiErrorException(HttpStatus.BAD_REQUEST, "Payment Cannot be done for the same order Id");
 			}
 			
-		return orderPaymentResponse;
 	}
 
 	private void calculateAndUpdateCustomerBalance(OrderPaymentInfoDto paymentDtoToEntity,
@@ -339,7 +352,9 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 		try {
 
 			List<ProductEntity> productPriceListDetails = productRepository.findtheProductPriceByProductId(productIdList);
-
+			
+			
+			
 			List<BigDecimal> productPriceList = productPriceListDetails.stream().map(ProductEntity::getProductPrice)
 					.collect(Collectors.toList());
 
@@ -386,7 +401,6 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 		
 	}
 
-	
 
 	private CustomerEntity getCustomerDetailsById(Long customerId) {
 		CustomerEntity customerEntity;
@@ -395,12 +409,16 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 
 		if (getCustomerBalance.isPresent()) {
 			customerEntity = getCustomerBalance.get();
-			// orderPaymentResponse =
 			// OrderPaymentServiceUtil.convertPaymentEntityResponse(paymentEntity);
 		} else {
-			return null;
+			throw new ResourceNotFoundException("CustomerDetails", "customerId", customerId);
 		}
 		return customerEntity;
 	}
 
+	private void validateRequestOrderDetails(OrderDetailsRequest orderDetailsRequest) {
+		if(orderDetailsRequest.getCustomerId()!=null && orderDetailsRequest.getCustomerId().longValue() < 1) {
+			throw new HandleApiErrorException(HttpStatus.BAD_REQUEST, "Customer Id cannot be Negative or 0");
+		}
+	}
 }

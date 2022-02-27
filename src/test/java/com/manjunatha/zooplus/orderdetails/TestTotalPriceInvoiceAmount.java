@@ -8,8 +8,9 @@ public class TestTotalPriceInvoiceAmount {
 
 		  
 		  BigDecimal totalPriceInvoiceAmount_TP = BigDecimal.ZERO;
-		  BigDecimal producutPriceInvoiceAmount_PP = new BigDecimal("1000"); 
-		  BigDecimal customerBalanceAmount_CB = new BigDecimal("-100");
+		  
+		  BigDecimal producutPriceInvoiceAmount_PP = new BigDecimal("0"); 
+		  BigDecimal customerBalanceAmount_CB = new BigDecimal("100");
 		  
 		  
 		  //TP = PP - CB;
@@ -23,7 +24,7 @@ public class TestTotalPriceInvoiceAmount {
 			  totalPriceInvoiceAmount_TP =customerBalanceAmount_CB.subtract(producutPriceInvoiceAmount_PP);
 		   }  else if (producutPriceInvoiceAmount_PP.compareTo(BigDecimal.ZERO) == 0 && customerBalanceAmount_CB.compareTo(BigDecimal.ZERO) < 0) {
 			   System.out.println("Condition 3");
-			   totalPriceInvoiceAmount_TP = customerBalanceAmount_CB.subtract(producutPriceInvoiceAmount_PP);
+			   totalPriceInvoiceAmount_TP = customerBalanceAmount_CB.negate().subtract(producutPriceInvoiceAmount_PP);
 		   } else if(producutPriceInvoiceAmount_PP.compareTo(BigDecimal.ZERO) > 0 && customerBalanceAmount_CB.compareTo(BigDecimal.ZERO) > 0 
 				   && producutPriceInvoiceAmount_PP.compareTo(customerBalanceAmount_CB) > 0) {
 			   System.out.println("Condition 4");
@@ -35,7 +36,9 @@ public class TestTotalPriceInvoiceAmount {
 		   } else if(customerBalanceAmount_CB.compareTo(BigDecimal.ZERO) < 0 && producutPriceInvoiceAmount_PP.compareTo(BigDecimal.ZERO) > 0){
 			   System.out.println("Condition 6");
 			   totalPriceInvoiceAmount_TP = producutPriceInvoiceAmount_PP.add(customerBalanceAmount_CB.negate());
-			   totalPriceInvoiceAmount_TP = totalPriceInvoiceAmount_TP.negate();
+		   } else if(customerBalanceAmount_CB.compareTo(producutPriceInvoiceAmount_PP) == 0) {
+			   System.out.println("Condition 7");
+			   totalPriceInvoiceAmount_TP = producutPriceInvoiceAmount_PP.subtract(customerBalanceAmount_CB);
 		   }
 			  
 		  // Display the result in BigDecimal 

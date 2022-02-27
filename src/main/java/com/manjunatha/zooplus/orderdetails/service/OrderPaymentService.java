@@ -13,8 +13,8 @@ public interface OrderPaymentService {
 
 	OrderPaymentResponse registerPayment(OrderPaymentRequest orderPaymentRequest);
 
-	OrderBalanceResponse getOrderBalance(String orderId);
+	OrderBalanceResponse getOrderBalance(Long orderId);
 
-	CustomerBalanceResponse getCustomerBalance(String customerId); 
+	CustomerBalanceResponse getCustomerBalance(Long customerId); 
 
 }

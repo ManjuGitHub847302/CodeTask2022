@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,6 +30,9 @@ public class CustomerEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SQ_CUSTOMER_ID")
 	@Column(name="ID")
+	@NotNull(message = "CUSTOMER_ID is not present. Please provide CUSTOMER_ID")
+	@Min(message = "CUSTOMER_ID cannot be negative", value = 0)
+	@Min(1)
 	private Long id;
 	
 	@Column(name="FIRST_NAME")
