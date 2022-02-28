@@ -42,3 +42,17 @@ INSERT INTO product (id, product_description, product_name, product_price) VALUE
 INSERT INTO product (id, product_description, product_name, product_price) VALUES (1010, 'DogFood_1010', 'Dog_Can_1010', '3245.56');
 
 INSERT INTO product (id, product_description, product_name, product_price) VALUES (1012, 'DogFood_1020', 'Dog_Can_1020', '4567.56');
+
+
+INSERT INTO order_details (id, comments, customer_id, order_date, order_status, product_id, products_prices_amount, total_product_amount) VALUES ('1', 'Order Created Sucessfully', '201', '2022-02-28 03:07:29', '1', '1001,1002,1003,1004,1005', '11295.80', '18273.36');
+
+INSERT INTO order_details (id, comments, customer_id, order_date, order_status, product_id, products_prices_amount, total_product_amount) VALUES ('2', 'Order Created Sucessfully', '202', '2022-02-28 03:07:29', '1', '1001,1002,1003,1004,1005', '11295.80', '18273.36');
+
+INSERT INTO order_details (id, comments, customer_id, order_date, order_status, product_id, products_prices_amount, total_product_amount) VALUES ('3', 'Order Created Sucessfully', '203', '2022-02-28 03:07:29', '1', '1001,1002,1003,1004', '112525.80', '18273.36');
+
+
+INSERT INTO payment (id,customer_id, order_balance, order_id, paid_amount, payment_date, payment_mode, products_prices_amount) VALUES ('100', '201', '68704.20', '1', '80000.00', '2022-02-28 00:53:27', 'Credit Card', '11295.80');
+
+INSERT INTO payment (id,customer_id, order_balance, order_id, paid_amount, payment_date, payment_mode, products_prices_amount) VALUES ('200', '202', '68704.20', '2', '80000.00', '2022-02-28 00:53:27', 'Credit Card', '11295.80');
+
+INSERT INTO payment (id,customer_id, order_balance, order_id, paid_amount, payment_date, payment_mode, products_prices_amount) VALUES ('300', '203', '68704.20', '3', '80000.00', '2022-02-28 00:53:27', 'Credit Card', '11295.80');

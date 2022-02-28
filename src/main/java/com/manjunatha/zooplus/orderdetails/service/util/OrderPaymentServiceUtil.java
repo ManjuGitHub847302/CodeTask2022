@@ -121,15 +121,27 @@ public class OrderPaymentServiceUtil {
 	}
 
 	public static OrderPaymentRequest validatePaymentRequestParmater(OrderPaymentRequest orderPaymentRequest) {
-		if(orderPaymentRequest.getCustomerId().longValue() < 1) {
+		if(orderPaymentRequest.getCustomerId() != null && orderPaymentRequest.getCustomerId() < 1) {
 			throw new HandleApiErrorException(HttpStatus.BAD_REQUEST, "Customer Id cannot be Negative or 0");
 		}
 		
-		if(orderPaymentRequest.getOrderId() < 1) {
+		if(orderPaymentRequest.getCustomerId() == null) {
+			throw new HandleApiErrorException(HttpStatus.BAD_REQUEST, "Customer Id cannot be Empty");
+		}
+		
+		if( orderPaymentRequest.getOrderId() != null && orderPaymentRequest.getOrderId() < 1) {
 			throw new HandleApiErrorException(HttpStatus.BAD_REQUEST, " Order Id cannot be Negative or 0");
 		}
 		
-		 if(!orderPaymentRequest.getPaymentMode().isEmpty()) {
+		if(orderPaymentRequest.getOrderId() == null) {
+			throw new HandleApiErrorException(HttpStatus.BAD_REQUEST, "Order Id cannot be Empty");
+		}
+		
+		if(orderPaymentRequest.getPaymentMode() == null) {
+			throw new HandleApiErrorException(HttpStatus.BAD_REQUEST, "Payment Mode cannot be Empty");
+		}
+		
+		 if(orderPaymentRequest.getPaymentMode()!= null) {
 			List<String> paymentMode = Arrays.asList("Credit Card", "PayPal", "GiroPay", "Sofort Banking","Cash in Advance");
 			if(!paymentMode.contains(orderPaymentRequest.getPaymentMode())){
 				throw new HandleApiErrorException(HttpStatus.BAD_REQUEST, "Payment Mode can Only be Credit Card or PayPal or GiroPay or Sofort Banking or Cash in Advance");

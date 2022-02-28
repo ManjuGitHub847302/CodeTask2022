@@ -42,6 +42,7 @@ public class OrderPaymentDetailsController {
 		OrderDetailsResponse orderDetailsResponse = orderPaymentService.registerOrder(orderDetailsRequest);
 		log.info("Exit the registerOrder method >>>>" +orderDetailsResponse.toString());
 	    return ResponseEntity.status(HttpStatus.CREATED).body(orderDetailsResponse);
+	    
 	  }
 	
 	
@@ -49,24 +50,26 @@ public class OrderPaymentDetailsController {
 	@PostMapping("/paymentMethod")
 	public ResponseEntity<OrderPaymentResponse> registerPayment(@Valid @RequestBody OrderPaymentRequest orderPaymentRequest) {
 		
-		log.info("Entering the registerOrder method >>>" + orderPaymentRequest);
+		log.info("Entering the registerOrder method >>>");
 		OrderPaymentResponse orderPaymentResponse = orderPaymentService.registerPayment(orderPaymentRequest);
 		log.info("Exit the registerOrder method >>>>" + orderPaymentResponse);
 	    return ResponseEntity.status(HttpStatus.CREATED).body(orderPaymentResponse);
+	    
 	  }
 	
 	@ApiOperation(value = "Get an OrderBalance By OrderId REST API")
-	@GetMapping("/order/balance/{orderId}")
+	@GetMapping("/order/{orderId}")
 	public ResponseEntity<OrderBalanceResponse> getOrderBalance(@PathVariable (name="orderId")  @Min(message = "orderId cannot be negative", value = 1) Long orderId) {
 		
-		log.info("Entering the orderBalance method >>>" + orderId);
+		log.info("Entering the orderBalance method >>>");
 		OrderBalanceResponse orderBalanceResponse = orderPaymentService.getOrderBalance(orderId);
 		log.info("Exit the orderBalance Resposnse method >>>" + orderBalanceResponse);
 		 return ResponseEntity.status(HttpStatus.OK).body(orderBalanceResponse);
+		 
 	  }
 	
 	@ApiOperation(value = "Get an CustomerBalance By customerId REST API")
-	@GetMapping("/customer/balance/{customerId}")
+	@GetMapping("/customer/{customerId}")
 	public ResponseEntity<CustomerBalanceResponse> getCustomerBalance(@PathVariable (name="customerId")  @Min(message = "CUSTOMER_ID cannot be negative", value = 1) Long customerId) {
 		
 		log.info("Entering the customerBalanceResponse method >>>" + customerId);
