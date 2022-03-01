@@ -19,7 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.manjunatha.zooplus.orderdetails.model.dto.info.ErrorDetailsInfoDto;
+import com.manjunatha.zooplus.orderdetails.model.dto.info.ApiErrorInfoDto;
 import com.manjunatha.zooplus.orderdetails.model.dto.request.OrderDetailsRequest;
 import com.manjunatha.zooplus.orderdetails.model.dto.request.OrderPaymentRequest;
 import com.manjunatha.zooplus.orderdetails.model.dto.response.CustomerBalanceResponse;
@@ -45,6 +45,8 @@ class OrderPaymentDetailsApplicationTests {
 	@Test
 	void contextLoads() {
 	}
+	
+	
 
 	@Test
 	public void testGetOrderBalanceById() {
@@ -65,10 +67,14 @@ class OrderPaymentDetailsApplicationTests {
 	HttpEntity<String> entity = new HttpEntity<String>(null, headers);
 	headers.setContentType(MediaType.APPLICATION_JSON);
 		
-	ResponseEntity<ErrorDetailsInfoDto> errorResponse =restTemplate.exchange(getRootUrl() + "/order-payment-service/order/1110", HttpMethod.GET, 
-			entity,ErrorDetailsInfoDto.class);
+	ResponseEntity<ApiErrorInfoDto> errorResponse =restTemplate.exchange(getRootUrl() + "/order-payment-service/order/1110", HttpMethod.GET, 
+			entity,ApiErrorInfoDto.class);
 	  log.info ("response >>>>>"+ errorResponse.getStatusCode());
+	  
+	  
 	assertEquals(errorResponse.getStatusCode(), HttpStatus.NOT_FOUND);
+	
+	
 			 
 	}
 	
@@ -93,8 +99,8 @@ class OrderPaymentDetailsApplicationTests {
 	HttpEntity<String> entity = new HttpEntity<String>(null, headers);
 	headers.setContentType(MediaType.APPLICATION_JSON);
 		
-	ResponseEntity<ErrorDetailsInfoDto> customerErrorResponse =restTemplate.exchange(getRootUrl() + "/order-payment-service/customer/1110", HttpMethod.GET, 
-			entity,ErrorDetailsInfoDto.class);
+	ResponseEntity<ApiErrorInfoDto> customerErrorResponse =restTemplate.exchange(getRootUrl() + "/order-payment-service/customer/10000", HttpMethod.GET, 
+			entity,ApiErrorInfoDto.class);
 	 log.info ("customerErrorResponse >>>>>"+ customerErrorResponse.getStatusCode());
 	 assertEquals(customerErrorResponse.getStatusCode(), HttpStatus.NOT_FOUND);
 			 

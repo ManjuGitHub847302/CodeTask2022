@@ -154,7 +154,7 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 		if (OrderBalanceDetails.isPresent()) {
 		     paymentEntity = OrderBalanceDetails.get();
 		} else {
-			throw new ResourceNotFoundException("OrderDetails", "OrderId", orderId);
+			throw new ResourceNotFoundException("Order Id not found ");
 		}
 
 		log.info("Exit Response method >>> " + OrderPaymentServiceUtil.convertPaymentEntityResponse(paymentEntity));
@@ -174,7 +174,7 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 		if (orderValidationCheckInfo.isPresent()) {
 				orderDetailsEntityLatest = orderValidationCheckInfo.get();
 				 if(orderDetailsEntityLatest.getCustomerId().compareTo(orderPaymentRequest.getCustomerId()) > 0 || orderDetailsEntityLatest.getCustomerId().compareTo(orderPaymentRequest.getCustomerId()) < 0) {
-					 throw new ResourceNotFoundException("CustomerId", "OrderID. Please Send Correct customer ID", orderPaymentRequest.getCustomerId());
+					 throw new ResourceNotFoundException("Please send the Customer Id Which have same Order id");
 			}
 		}
 		
@@ -213,7 +213,7 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 		if (orderDetailsEntity == null || orderDetailsEntity.getId() == null
 				|| orderDetailsEntity.getId().toString().isEmpty()) {
 			log.error("Order Id is null");
-			throw new ResourceNotFoundException("OrderDetails", "OrderId", orderDetailsEntity.getId());
+			throw new ResourceNotFoundException("Order ID not found");
 		}
 
 		log.info("orderDetailsEntity.getId() >>>>" + orderDetailsEntity.getId());
@@ -245,7 +245,7 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 			}
 			if (orderPaymentEntity == null || orderPaymentEntity.getId() == null
 					|| orderPaymentEntity.getId().toString().isEmpty()) {
-				throw new ResourceNotFoundException("Payment Details", "PaymnetId", orderPaymentEntity.getId());
+				throw new ResourceNotFoundException("Order Id not found");
 			}
 			orderPaymentEntity.setId(orderPaymentEntity.getId());
 			
@@ -280,7 +280,7 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 				 }
 			
 		} else {
-			throw new ResourceNotFoundException("CustomerDetails", "customerId", paymentDtoToEntity.getCustomerId());
+			throw new ResourceNotFoundException("customerId Not found");
 		}
   }
 	}
@@ -308,7 +308,7 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 			paymentDtoToEntity.setProductsPriceInvoiceAmount(orderDetailsEntity.getProductsPriceInvoiceAmount());
 			totalPriceInvoiceAmount_TP = orderDetailsEntity.getTotalProductsPriceInvoiceAmount();
 		} else {
-			throw new ResourceNotFoundException("PaymentOrder", "PaymentOrder", paymentDtoToEntity.getOrderId());
+			throw new ResourceNotFoundException("Order Id not Present");
 		}
 
 		return totalPriceInvoiceAmount_TP;
@@ -328,7 +328,7 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 				.collect(Collectors.toList());
 		
 		if(productPriceList.size() <= 0) {
-			throw new ResourceNotFoundException("Product Details", "ProductPrice", "Product Details are Empty");
+			throw new ResourceNotFoundException("Product Details are Empty");
 		}
 
 		producutPriceInvoiceAmount_PP = productPriceList.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -354,7 +354,7 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 		if (getCustomerBalance.isPresent()) {
 			customerEntity = getCustomerBalance.get();
 		} else {
-			throw new ResourceNotFoundException("CustomerDetails", "customerId", customerId);
+			throw new ResourceNotFoundException("Customer Id not Present");
 		}
 		return customerEntity;
 	}
